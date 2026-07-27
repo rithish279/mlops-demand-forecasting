@@ -1,0 +1,11 @@
+venv/
+data/raw/*.csv
+data/processed/*.csv
+__pycache__/
+*.pyc
+.env
+mlruns/
+models/*.pkl
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
