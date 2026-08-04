@@ -72,5 +72,7 @@ def run_training(params: dict = None):
         print(f"MAE:  {metrics['mae']:.2f}")
         print(f"R2:   {metrics['r2']:.4f}")
 
+        return model, metrics
+
 if __name__ == "__main__":
     run_training()
