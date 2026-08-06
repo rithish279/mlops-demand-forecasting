@@ -23,7 +23,7 @@ def promote_to_production(model_name: str, version: str):
     print(f"{model_name} v{version} promoted to Production")
 
 def get_production_model(model_name: str = MODEL_NAME):
-    model_uri = f"models:/{model_name}/@production"
+    model_uri = f"models:/{model_name}@production"
     return mlflow.xgboost.load_model(model_uri)
 
 if __name__ == "__main__":
