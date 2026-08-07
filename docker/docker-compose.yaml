@@ -1,0 +1,36 @@
+services:
+  mlflow-server:
+    image: python:3.13-slim
+    working_dir: /app
+    volumes:
+      - ../mlruns:/app/mlruns
+      - ../mlflow.db:/app/mlflow.db
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_SERVER_ALLOWED_HOSTS=mlflow-server:5000,localhost:5000
+    command: >
+      bash -c "pip install mlflow==3.15.1 &&
+      mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root /app/mlruns --host 0.0.0.0 --port 5000"
+
+  train:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.train
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+    volumes:
+      - ../data:/app/data
+    depends_on:
+      - mlflow-server
+
+  serve:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.serve
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mlflow-server
