@@ -54,7 +54,6 @@ def evaluate_model(model: XGBRegressor, X_test, y_test) -> dict:
 def run_training(params: dict = None):
     params = params or DEFAULT_PARAMS
     df = load_features()
-
     X_train, X_test, y_train, y_test = split_data(df)
 
     with mlflow.start_run():
@@ -66,13 +65,14 @@ def run_training(params: dict = None):
         mlflow.log_metric("mae", metrics["mae"])
         mlflow.log_metric("r2", metrics["r2"])
         mlflow.log_param("feature_count", len(FEATURE_COLUMNS))
-        mlflow.xgboost.log_model(model, "model")
+
+        model_info = mlflow.xgboost.log_model(model, name="model")
 
         print(f"RMSE: {metrics['rmse']:.2f}")
         print(f"MAE:  {metrics['mae']:.2f}")
         print(f"R2:   {metrics['r2']:.4f}")
 
-        return model, metrics
+    return model, metrics, model_info
 
 if __name__ == "__main__":
     run_training()
