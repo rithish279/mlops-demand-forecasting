@@ -9,6 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ src/
 COPY api/ api/
 
-# Data and MLflow tracking store are mounted as volumes at runtime,
-# not baked into the image — see docker-compose.yml
 CMD ["python", "-m", "src.models.registry"]

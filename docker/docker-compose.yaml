@@ -3,9 +3,14 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.mlflow-server
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     volumes:
-      - ../mlruns:/app/mlruns
-      - ../mlflow.db:/app/mlflow.db
+      - mlflow-db:/app/db
+      - mlflow-artifacts:/app/mlruns
     ports:
       - "5000:5000"
     environment:
@@ -19,8 +24,10 @@ services:
       - MLFLOW_TRACKING_URI=http://mlflow-server:5000
     volumes:
       - ../data:/app/data
+      - mlflow-artifacts:/app/mlruns
     depends_on:
-      - mlflow-server
+      mlflow-server:
+        condition: service_healthy
 
   serve:
     build:
@@ -28,7 +35,14 @@ services:
       dockerfile: docker/Dockerfile.serve
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+    volumes:
+      - mlflow-artifacts:/app/mlruns
     ports:
       - "8000:8000"
     depends_on:
-      - mlflow-server
+      mlflow-server:
+        condition: service_healthy
+
+volumes:
+  mlflow-db:
+  mlflow-artifacts:
