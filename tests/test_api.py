@@ -1,7 +1,9 @@
 import pytest
+import os
 from fastapi.testclient import TestClient
 from api.main import app
 
+MLFLOW_AVAILABLE = os.environ.get("MLFLOW_TRACKING_URI") is not None
 
 @pytest.fixture
 def client():
@@ -14,7 +16,10 @@ def test_health_endpoint(client):
     assert response.status_code == 200
     assert "status" in response.json()
 
-
+@pytest.mark.skipif(
+        not MLFLOW_AVAILABLE,
+        reason="Requires a running MLflow server with promoted production model"
+)
 def test_predict_returns_valid_response(client):
     payload = {
         "lag_1": 100, "lag_2": 105, "lag_3": 110, "lag_7": 120, "lag_14": 115,
