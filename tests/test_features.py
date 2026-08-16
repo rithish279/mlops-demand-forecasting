@@ -1,3 +1,5 @@
+import pytest
+import os
 import pandas as pd
 from src.data.feature_engineering import (
     add_target,
@@ -57,6 +59,7 @@ def test_feature_columns_are_numeric():
     for col in feature_cols:
         assert pd.api.types.is_numeric_dtype(df[col]), f"{col} is not numeric"
 
+@pytest.mark.skipif(not os.path.exists("data/raw/day.csv"), reason="Full dataset not available in CI")
 def test_engineer_features_on_real_data():
     from src.data.validation import run_validation
 

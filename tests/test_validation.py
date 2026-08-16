@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+import os
 from src.data.validation import (
     validate_schema,
     validate_no_missing_values,
@@ -9,6 +10,7 @@ from src.data.validation import (
 )
 
 # Sanity Check against actual dataset
+@pytest.mark.skipif(not os.path.exists("data/raw/day.csv"), reason="Full dataset not available in CI")
 def test_run_validation_on_real_data():
     df = run_validation("data/raw/day.csv")
     assert len(df) == 731
